@@ -12,7 +12,7 @@ const Login = lazy(() => import("./pages/LoginPage"));
 
 const darkTheme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
   },
 });
 
