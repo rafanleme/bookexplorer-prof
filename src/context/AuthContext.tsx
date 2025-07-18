@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from "react";
-import { setAuthToken } from "../api/axios";
+import { api, setAuthToken } from "../api/axios";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface AuthContextType {
@@ -20,20 +20,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAuthenticated = !!token;
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const { data } = await api.post<{ token: string }>("/login", {
+        email,
+        password,
+      });
 
-    if (!res.ok) {
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      setAuthToken(data.token);
+    } catch {
       throw new Error("Credenciais inválidas");
     }
-
-    const data = await res.json();
-    localStorage.setItem("token", data.token);
-    setToken(data.token);
-    setAuthToken(data.token);
   };
 
   const logout = () => {
